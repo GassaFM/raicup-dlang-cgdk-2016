@@ -8,7 +8,7 @@ Previous work:
 
 * 2013 D CGDK by Vladislav Isenbaev (https://github.com/winger/d-cgdk)
 
-* 2015 D CGDK by Vladislav Isenbaev (https://github.com/GassaFM/raicup-dlang-cgdk-2015)
+* 2015 D CGDK by Ivan Kazmenko (https://github.com/GassaFM/raicup-dlang-cgdk-2015)
 
 Author: Ivan Kazmenko
 
