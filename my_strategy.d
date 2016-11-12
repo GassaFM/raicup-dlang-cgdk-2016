@@ -8,9 +8,9 @@ final class MyStrategy : Strategy
     void move (immutable Wizard self, immutable World world,
         immutable Game game, ref Move move)
     {
-        move.Speed = game.WizardForwardSpeed;
-        move.StrafeSpeed = game.WizardStrafeSpeed;
-        move.Turn = game.WizardMaxTurnAngle;
-        move.Action = ActionType.MagicMissile;
+        move.speed = game.wizardForwardSpeed;
+        move.strafeSpeed = game.wizardStrafeSpeed;
+        move.turn = game.wizardMaxTurnAngle;
+        move.action = ActionType.MagicMissile;
     }
 }

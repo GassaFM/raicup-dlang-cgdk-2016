@@ -10,6 +10,60 @@ import std.traits;
 
 import model;
 
+alias I (alias T) = T;
+
+template WriteContents (T)
+{
+    string Impl ()
+    {
+        string res;
+        alias member = I !(__traits (getMember, T, "__ctor"));
+        alias types = ParameterTypeTuple !(member);
+        alias names = ParameterIdentifierTuple !(member);
+        foreach (i, type; types)
+        {
+            immutable string line = "write !(const " ~
+                type.stringof ~ ") (t." ~ names[i] ~ ");\n";
+            res ~= line;
+        }
+        return res;
+    }
+
+    immutable string WriteContents = Impl ();
+}
+
+template ReadContents (T)
+{
+    string Impl ()
+    {
+        string res;
+        alias member = I !(__traits (getMember, T, "__ctor"));
+        alias types = ParameterTypeTuple !(member);
+        alias names = ParameterIdentifierTuple !(member);
+        foreach (i, type; types)
+        {
+            immutable string line = "auto " ~ names[i] ~
+                " = read !(" ~ type.stringof ~ ") ();\n";
+            res ~= line;
+        }
+        return res;
+    }
+
+    immutable string ReadContents = Impl ();
+}
+
+template CallConstructor (T)
+{
+    string Impl ()
+    {
+        alias member = I !(__traits (getMember, T, "__ctor"));
+        alias names = ParameterIdentifierTuple !(member);
+        return "return new immutable T (" ~ [names].join (", ") ~ ");\n";
+    }
+
+    immutable string CallConstructor = Impl ();
+}
+
 enum MessageType : byte
 {
     unknownMessage,
@@ -94,25 +148,35 @@ private:
     {
         enforce (read !(bool));
 
-        return new immutable T ();
-
-        // TODO: reflect on constructor of T to get field types and names.
-        // Alternatively, just generate individual functions in java_to_d.d.
-/*
-        auto wizards = read !(immutable Wizard []) ();
-        auto world = read !(immutable World) ();
-
-        return new immutable T (wizards, world);
-*/
+//        pragma (msg, ReadContents !(T));
+//        pragma (msg, CallConstructor !(T));
+        mixin (ReadContents !(T));
+        mixin (CallConstructor !(T));
     }
 
-    void write (T) (T t)
-        if (is (T == class))
+    void write (T : Move) (T t)
     {
         write !(bool) (true);
 
-        // TODO: reflect on constructor of T to get field types and names.
-        // Alternatively, just generate individual functions in java_to_d.d.
+        write !(double) (t.speed);
+        write !(double) (t.strafeSpeed);
+        write !(double) (t.turn);
+        write !(ActionType) (t.action);
+        write !(double) (t.castAngle);
+        write !(double) (t.minCastDistance);
+        write !(double) (t.maxCastDistance);
+        write !(long) (t.statusTargetId);
+        write !(SkillType) (t.skillToLearn);
+        write !(Message []) (t.messages);
+    }
+
+    void write (T) (T t)
+        if (is (T == class) && !is (T : Move))
+    {
+        write !(bool) (true);
+
+        pragma (msg, WriteContents !(T));
+        mixin (WriteContents !(T));
     }
 
     auto read (T : T [num], ulong num) ()
