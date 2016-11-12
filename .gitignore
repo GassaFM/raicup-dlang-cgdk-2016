@@ -1,0 +1,7 @@
+MyStrategy
+MyStrategy.exe
+*.exe
+*.obj
+*.o
+*.log
+result.txt
