@@ -1,8 +1,9 @@
 DC = dmd
-DFLAGS = -O -release -inline -noboundscheck -wi -m32
+#DFLAGS = -O -release -inline -noboundscheck -wi -m32
+DFLAGS = -g -debug -debug=io -unittest -wi -m32
 LOCAL_RUNNER = java -jar local-runner.jar true false 3 result.txt true false
 
-SRC=$(wildcard *.d) $(wildcard */*.d)
+SRC=$(wildcard *.d) $(wildcard model/*.d)
 
 all : MyStrategy
 
@@ -15,4 +16,4 @@ run : MyStrategy
 	./MyStrategy
 
 clean :
-	$(RM) MyStrategy *.o compilation.log result.txt
+	$(RM) MyStrategy MyStrategy.exe *.o *.obj compilation.log result.txt

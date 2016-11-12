@@ -146,6 +146,8 @@ private:
     auto read (T) ()
         if (is (T == class))
     {
+        debug (io) {writeln (">read " ~ T.stringof);}
+        debug (io) {scope (exit) {writeln ("<read " ~ T.stringof);}}
         enforce (read !(bool));
 
 //        pragma (msg, ReadContents !(T));
@@ -156,6 +158,8 @@ private:
 
     void write (T : Move) (T t)
     {
+        debug (io) {writeln (">write " ~ T.stringof);}
+        debug (io) {scope (exit) {writeln ("<write " ~ T.stringof);}}
         write !(bool) (true);
 
         write !(double) (t.speed);
@@ -173,9 +177,11 @@ private:
     void write (T) (T t)
         if (is (T == class) && !is (T : Move))
     {
+        debug (io) {writeln (">write " ~ T.stringof);}
+        debug (io) {scope (exit) {writeln ("<write " ~ T.stringof);}}
         write !(bool) (true);
 
-        pragma (msg, WriteContents !(T));
+//        pragma (msg, WriteContents !(T));
         mixin (WriteContents !(T));
     }
 
@@ -209,24 +215,35 @@ private:
     {
         debug (io) {writeln ("array read");}
         int len = read !(int) ();
-        enforce (len >= 0);
-
-        T [] ret;
-        ret.reserve (len);
-        foreach (i; 0..len)
+        if (len < 0)
         {
-            ret ~= read !(T) ();
+            return null;
         }
-
-        return ret;
+        else
+        {
+            T [] ret;
+            ret.reserve (len);
+            foreach (i; 0..len)
+            {
+                ret ~= read !(T) ();
+            }
+            return ret;
+        }
     }
 
     void write (T : T []) (T [] value)
     {
-        write !(int) (cast (int) (value.length));
-        foreach (elem; value)
+        if (value is null)
         {
-            write !(T) (elem);
+            write !(int) (-1);
+        }
+        else
+        {
+            write !(int) (cast (int) (value.length));
+            foreach (elem; value)
+            {
+                write !(T) (elem);
+            }
         }
     }
 
