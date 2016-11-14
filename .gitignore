@@ -1,8 +1,0 @@
-MyStrategy
-MyStrategy.exe
-java
-*.exe
-*.obj
-*.o
-*.log
-result.txt
